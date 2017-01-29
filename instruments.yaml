@@ -11,9 +11,44 @@ devices:
         r: "LSCI,MODEL350,1234567/1234567,1.0"
       - q: "*CLS"
       - q: "*RST"
-    properties:
-      temperatureK:
-        default: 100.0
+    channels:
+      channel:
+        ids: ["A", "B", "C", "D"]
+        can_select: True
+        properties:
+          temperatureK:
+            default: 100.0
+            getter:
+              q: "KRDG? {ch_id}"
+              r: "{:+.6f}"
+            setter:
+              q: "fake setter"
+            specs:
+              min: 0
+              max: 1000
+              type: float
+          temperatureC:
+            default: -173.0
+            getter:
+              q: "CRDG? {ch_id}"
+              r: "{:+.6f}"
+            setter:
+              q: "fake setter"
+            specs:
+              min: -273.15
+              max: 1000
+              type: float
+          sensor:
+            default: 45.0
+            getter:
+              q: "SRDG? {ch_id}"
+              r: "{:+.6f}"
+            setter:
+              q: "fake setter"
+            specs:
+              min: 0
+              max: 100000
+              type: float
 
 
 resources:

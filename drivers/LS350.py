@@ -20,6 +20,10 @@ class LS350(Driver):
         except AttributeError:
             pass
 
+    def check_channel(self, channel):
+        if channel not in ['A', 'B', 'C', 'D']:
+            raise ValueError('The channel letter must be specified. Valid values are ["A", "B", "C", "D"].')
+
     def clear_interface(self):
         """
         *CLS[term]
@@ -66,19 +70,17 @@ class LS350(Driver):
         units: The temperature units (either K, or C)
         sensor (bool): Also return the sensor value in sensor units?
         """
-        if channel not in ['A', 'B', 'C', 'D']:
-            raise ValueError('The channel letter must be specified. Valid values are ["A", "B", "C", "D"].')
+        self.check_channel()
 
         if units == Temperature.K:
-            command = "KRDG? {};"
+            command = "KRDG? {channel};"
         else:
-            command = "CRDG? {};"
-        command.format(channel)
+            command = "CRDG? {channel};"
 
         if sensor:
-            command += "SRDG? {};".format(channel)
+            command += "SRDG? {channel};"
 
-        return self.resource.query(command)
+        return self.resource.query(command.format(channel=channel))
 
     def get_temperatures(self, channels, units=Temperature.K, sensor=False):
         """
@@ -90,22 +92,32 @@ class LS350(Driver):
         command = ""
 
         for channel in channels:
-            if channel not in ['A', 'B', 'C', 'D']:
-                raise ValueError('The channel letter must be specified. Valid values are ["A", "B", "C", "D"].')
+            self.check_channel()
 
             if units == Temperature.K:
-                command += "KRDG? {};"
+                command += "KRDG? {channel};"
             else:
-                command += "CRDG? {};"
-            command.format(channel)
+                command += "CRDG? {channel};"
 
             if sensor:
-                command += "SRDG? {};".format(channel)
+                command += "SRDG? {channel};"
+            command = command.format(channel)
 
         return self.resource.query(command)
 
+    def get_sensor(self, channel):
+        """
+        Get the sensor value of a channel
+        """
+        self.check_channel()
+        return self.resource.query("SRDG? {channel}".format(channel=channel))
 
-    """def get_sensor(self):
-
-    def get_sensors(self):"""
-
+    def get_sensors(self, channels):
+        """
+        Get the sensor value of multiple channels
+        """
+        command = ''
+        for channel in channels:
+            self.check_channel()
+            command += "SRDG? {channel};".format(channel=channel)
+        return self.resource.query(command)

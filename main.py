@@ -1,5 +1,5 @@
 import visa
-from drivers import LS350
+from drivers.LS350 import *
 
 
 if __name__ == '__main__':
@@ -9,3 +9,5 @@ if __name__ == '__main__':
     print(driver.resource.__class__)
     driver.clear_interface()
     print(driver.identification_query())
+    print(driver.resource.query('SRDG? A; KRDG? B'))
+    print(driver.get_temperature('A', Temperature.C))
