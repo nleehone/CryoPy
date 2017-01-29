@@ -1,0 +1,21 @@
+spec: "1.0"
+devices:
+  LS350:
+    eom:
+      ASRL INSTR:
+        q: "\r\n"
+        r: "\n"
+    error: ERROR
+    dialogues:
+      - q: "*IDN?"
+        r: "LSCI,MODEL350,1234567/1234567,1.0"
+      - q: "*CLS"
+      - q: "*RST"
+    properties:
+      temperatureK:
+        default: 100.0
+
+
+resources:
+  ASRL1::INSTR:
+    device: LS350
