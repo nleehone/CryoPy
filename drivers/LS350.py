@@ -70,7 +70,7 @@ class LS350(Driver):
         units: The temperature units (either K, or C)
         sensor (bool): Also return the sensor value in sensor units?
         """
-        self.check_channel()
+        self.check_channel(channel)
 
         if units == Temperature.K:
             command = "KRDG? {channel};"
@@ -92,7 +92,7 @@ class LS350(Driver):
         command = ""
 
         for channel in channels:
-            self.check_channel()
+            self.check_channel(channel)
 
             if units == Temperature.K:
                 command += "KRDG? {channel};"
@@ -109,7 +109,7 @@ class LS350(Driver):
         """
         Get the sensor value of a channel
         """
-        self.check_channel()
+        self.check_channel(channel)
         return self.resource.query("SRDG? {channel}".format(channel=channel))
 
     def get_sensors(self, channels):
@@ -118,6 +118,6 @@ class LS350(Driver):
         """
         command = ''
         for channel in channels:
-            self.check_channel()
+            self.check_channel(channel)
             command += "SRDG? {channel};".format(channel=channel)
         return self.resource.query(command)
