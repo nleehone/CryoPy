@@ -1,6 +1,3 @@
-import fcntl as F
-
-
 class Instrument():
     def get_temperature(self):
         with open("temperature.dat") as file:
