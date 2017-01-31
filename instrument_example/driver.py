@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import instrument_example.instrument as instr
 import zmq
@@ -13,9 +14,14 @@ def get_temperature():
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("Cannot initialize the Driver without a port: python driver.py <port>")
+        exit()
+
+    port = sys.argv[1]
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind('tcp://*:5557')
+    socket.bind('tcp://*:{}'.format(port))
 
     while True:
         command = socket.recv_json()

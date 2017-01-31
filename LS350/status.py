@@ -13,10 +13,10 @@ class StatusWindow(tk.Frame):
         label.grid(row=row, column=1, padx=10)
         self.status[row] = label
 
-        def spawn_proc():
-            self.subprocesses[row] = subprocess.Popen(['python3', process])
+        def spawn_proc(port):
+            self.subprocesses[row] = subprocess.Popen(['python3', process, str(port)])
 
-        button = tk.Button(self, text='Start', command=spawn_proc)
+        button = tk.Button(self, text='Start', command=lambda: spawn_proc(self.port.get()))
         button.grid(row=row, column=2)
 
         button = tk.Button(self, text='Stop', command=lambda: self.subprocesses[row].terminate())
@@ -27,12 +27,19 @@ class StatusWindow(tk.Frame):
         self.pack()
         self.status = {}
 
-        self.create_part(0, 'Driver', 'driver.py')
-        self.create_part(1, 'Acquirer', 'acquirer.py')
-        self.create_part(2, 'Data Store', 'data_store.py')
-        self.create_part(3, 'Recorder', 'recorder.py')
-        self.create_part(4, 'Controller', 'controller.py')
-        self.create_part(5, 'Front End', 'frontend.py')
+        label = tk.Label(self, text='Port:')
+        label.grid(row=0, column=0)
+        self.port = tk.IntVar()
+        entry = tk.Entry(self, textvariable=self.port)
+        entry.grid(row=0, column=1, columnspan=2)
+
+
+        self.create_part(1, 'Driver', 'driver.py')
+        self.create_part(2, 'Acquirer', 'acquirer.py')
+        self.create_part(3, 'Data Store', 'data_store.py')
+        self.create_part(4, 'Recorder', 'recorder.py')
+        self.create_part(5, 'Controller', 'controller.py')
+        self.create_part(6, 'Front End', 'frontend.py')
         self.check_status()
 
     def check_status(self):
