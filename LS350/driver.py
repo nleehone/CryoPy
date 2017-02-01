@@ -1,23 +1,31 @@
+import visa
 import numpy as np
 import instrument_example.instrument as instr
 import zmq
 import sys
+from drivers import LS350
 
 
 class Driver(object):
     def __init__(self, driver_port):
         self.context = zmq.Context()
+        rm = visa.ResourceManager()
+        self.LS350 = LS350(rm.open_resource('ASRL1::INSTR'))
 
         self.driver_socket = self.context.socket(zmq.REP)
         self.driver_socket.bind('tcp://*:{}'.format(driver_port))
 
     def set_temperature(self, T):
-        instrument = instr.Instrument()
-        instrument.set_temperature(T)
+        #instrument = instr.Instrument()
+        #instrument.set_temperature(T)
+        pass
 
     def get_temperature(self):
-        instrument = instr.Instrument()
-        return instrument.get_temperature() + 10.0*(np.random.rand()*2.0 - 1.0)
+        #instrument = instr.Instrument()
+        #return instrument.get_temperature() + 10.0*(np.random.rand()*2.0 - 1.0)
+        temp = self.LS350.get_temperature('A')
+        print(temp)
+        return temp
 
     def run(self):
         while True:
