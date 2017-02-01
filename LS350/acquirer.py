@@ -2,16 +2,31 @@ import zmq
 import time
 
 
-if __name__ == '__main__':
-    context = zmq.Context()
-    socket = context.socket(zmq.PUB)
-    socket.bind('tcp://*:5555')
-    socket1 = context.socket(zmq.REQ)
-    socket1.connect('tcp://localhost:5557')
+class Acquirer(object):
+    def __init__(self, command_port, pub_port, driver_port):
+        self.context = zmq.Context()
 
-    while True:
-        socket1.send_json({'Cmd': 'Get'})
-        temp = socket1.recv_json()['T']
-        print('sending %s' % temp)
-        socket.send_json({'T': temp})
-        time.sleep(0.01)
+        self.pub_socket = self.context.socket(zmq.PUB)
+        self.pub_socket.bind('tcp://*:{}'.format(pub_port))
+
+        self.driver_socket = self.context.socket(zmq.REQ)
+        self.driver_socket.connect('tcp://localhost:{}'.format(driver_port))
+
+        self.command_socket = self.context.socket(zmq.REP)
+        self.command_socket.bind('tcp://*:{}'.format(command_port))
+
+    def run(self):
+        while True:
+            # Get the data from the instrument driver
+            self.driver_socket.send_json({'cmd': 'get'})
+            temp = self.driver_socket.recv_json()['T']
+
+            # Publish the data for other components to use
+            self.pub_socket.send_json({'T': temp})
+
+            time.sleep(0.01)
+
+
+if __name__ == '__main__':
+    Acquirer(5555, 5556, 5554).run()
+

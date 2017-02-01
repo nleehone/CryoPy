@@ -21,7 +21,7 @@ class Frontend(tk.Frame):
     def create_commander(self):
         context = zmq.Context()
         self.socket = context.socket(zmq.REQ)
-        self.socket.connect('tcp://localhost:5556')
+        self.socket.connect('tcp://localhost:5559')
 
     def create_gui(self):
         self.f = matplotlib.figure.Figure()
@@ -60,7 +60,7 @@ class Frontend(tk.Frame):
         context = zmq.Context()
 
         socket = context.socket(zmq.SUB)
-        socket.connect('tcp://localhost:5555')
+        socket.connect('tcp://localhost:5556')
         socket.setsockopt_string(zmq.SUBSCRIBE, '')
 
         while True:

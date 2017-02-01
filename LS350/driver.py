@@ -4,32 +4,37 @@ import zmq
 import sys
 
 
-def set_temperature(T):
-    instrument = instr.Instrument()
-    instrument.set_temperature(T)
+class Driver(object):
+    def __init__(self, driver_port):
+        self.context = zmq.Context()
 
-def get_temperature():
-    instrument = instr.Instrument()
-    return instrument.get_temperature() + 10.0*(np.random.rand()*2.0 - 1.0)
+        self.driver_socket = self.context.socket(zmq.REP)
+        self.driver_socket.bind('tcp://*:{}'.format(driver_port))
+
+    def set_temperature(self, T):
+        instrument = instr.Instrument()
+        instrument.set_temperature(T)
+
+    def get_temperature(self):
+        instrument = instr.Instrument()
+        return instrument.get_temperature() + 10.0*(np.random.rand()*2.0 - 1.0)
+
+    def run(self):
+        while True:
+            command = self.driver_socket.recv_json()
+            print(command)
+            if command['cmd'] == 'set':
+                self.set_temperature(command['T'])
+                self.driver_socket.send_json({})
+            elif command['cmd'] == 'get':
+                self.driver_socket.send_json({'T': self.get_temperature()})
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("Cannot initialize the Driver without a port: python driver.py <port>")
-        exit()
+    #if len(sys.argv) < 2:
+    #    print("Cannot initialize the Driver without a port: python driver.py <port>")
+    #    exit()
 
-    port = sys.argv[1]
-
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    socket.bind('tcp://*:{}'.format(port))
-
-    while True:
-        command = socket.recv_json()
-        if command['Cmd'] == 'Set':
-            set_temperature(command['T'])
-            socket.send_json({})
-            "Here"
-        elif command['Cmd'] == 'Get':
-            socket.send_json({'T': get_temperature()})
+    #Driver(sys.argv[1]).run()
+    Driver(5554).run()
 

@@ -33,7 +33,6 @@ class StatusWindow(tk.Frame):
         entry = tk.Entry(self, textvariable=self.port)
         entry.grid(row=0, column=1, columnspan=2)
 
-
         self.create_part(1, 'Driver', 'driver.py')
         self.create_part(2, 'Acquirer', 'acquirer.py')
         self.create_part(3, 'Data Store', 'data_store.py')

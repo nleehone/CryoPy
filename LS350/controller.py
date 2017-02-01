@@ -1,33 +1,29 @@
 import zmq
-from threading import Thread
 
 
-def command_loop():
-    # Contexts are thread dependent so we need to start the context here
-    socket1 = context.socket(zmq.REP)
-    socket1.bind('tcp://*:5556')
-    socket2 = context.socket(zmq.REQ)
-    socket2.connect('tcp://localhost:5557')
+class Controller(object):
+    def __init__(self, command_port, acquirer_port, driver_port):
+        self.context = zmq.Context()
 
-    while True:
-        T = socket1.recv_json()['Set T']
-        socket2.send_json({'Cmd': 'Set', 'T': T})
-        socket2.recv_json()
-        #driver.set_temperature(T)
-        print("Set T")
-        socket1.send(b'')
+        self.command_socket = self.context.socket(zmq.REP)
+        self.command_socket.bind('tcp://*:{}'.format(command_port))
+
+        self.acquirer_socket = self.context.socket(zmq.SUB)
+        self.acquirer_socket.connect('tcp://localhost:{}'.format(acquirer_port))
+        self.acquirer_socket.setsockopt_string(zmq.SUBSCRIBE, '')
+
+        self.driver_socket = self.context.socket(zmq.REQ)
+        self.driver_socket.connect('tcp://localhost:{}'.format(driver_port))
+
+    def run(self):
+        while True:
+            T = self.command_socket.recv_json()['Set T']
+            self.driver_socket.send_json({'cmd': 'set', 'T': T})
+            print("Sent")
+            self.driver_socket.recv_json()
+            print("Sent1")
+            self.command_socket.send(b'')
 
 
 if __name__ == '__main__':
-    context = zmq.Context()
-
-    socket = context.socket(zmq.SUB)
-    socket.connect('tcp://localhost:5555')
-    socket.setsockopt_string(zmq.SUBSCRIBE, '')
-
-    p = Thread(target=command_loop)
-    p.start()
-
-    while True:
-        message = socket.recv()
-        #print(message)
+    Controller(5559, 5556, 5554).run()
