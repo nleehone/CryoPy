@@ -15,12 +15,13 @@ class Driver(object):
         self.driver_socket = self.context.socket(zmq.REP)
         self.driver_socket.bind('tcp://*:{}'.format(driver_port))
 
-    def set_temperature(self, T):
-        #instrument = instr.Instrument()
-        #instrument.set_temperature(T)
-        pass
+    def set_temperature_setpoint(self, params):
+        try:
+            self.LS350.set_temperature_setpoint(params['channel'], params['setpoint'])
+        except KeyError as e:
+            print(e)
 
-    def get_temperature(self):
+    def get_temperature(self, params):
         #instrument = instr.Instrument()
         #return instrument.get_temperature() + 10.0*(np.random.rand()*2.0 - 1.0)
         temp = self.LS350.get_temperature('A')
@@ -30,27 +31,33 @@ class Driver(object):
     def get_sens(self):
         return self.LS350.get_sensor('A')
 
-    def set(self, command):
-        {''}[command]()
+    def set(self, command, params):
+        try:
+            {
+                'temperature_setpoint': self.set_temperature
+             }[command](params)
+        except KeyError as e:
+            print(e)
 
-    def identify(self, params):
-        print("IDN")
+    def get_idn(self, params):
         return self.LS350.identification_query()
 
     def get(self, command, params):
-        return {
-            'identify': self.identify,
-            'temperature A': self.get_temperature,
-            'sens': self.get_sens
-        }[command](params)
+        try:
+            return {
+                'identify': self.get_idn,
+                'temperature': self.get_temperature,
+                'sensor': self.get_sensor,
+                'sens': self.get_sens
+            }[command](params)
+        except KeyError as e:
+            print(e)
 
     def run(self):
         while True:
             command = self.driver_socket.recv_json()
-
             if command['METHOD'] == 'SET':
-                self.set(command['CMD'])
-                self.set_temperature(command['T'])
+                self.set(command['CMD'], command['PARS'])
                 self.driver_socket.send_json({})
             elif command['METHOD'] == 'GET':
                 value = self.get(command['CMD'], command['PARS'])

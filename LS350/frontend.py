@@ -22,6 +22,7 @@ def get(socket, command, params, timeout=1000):
 
 def set(socket, command, params):
     socket.send_json({'METHOD': 'SET', 'CMD': command, 'PARS': params})
+    socket.recv()
 
 
 class Frontend(tk.Frame):
@@ -70,8 +71,7 @@ class Frontend(tk.Frame):
 
     def command(self, event):
         val = self.set_T.get()
-        self.socket.send_json({'Set T': float(val)})
-        self.socket.recv()
+        set(self.socket, 'temperature_setpoint', {'channel': 'A', 'setpoint': val})
 
     def create_listener(self):
         p = Thread(target=self.zmq_loop)

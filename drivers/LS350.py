@@ -122,3 +122,8 @@ class LS350(Driver):
             self.check_channel(channel)
             command += "SRDG? {channel};".format(channel=channel)
         return self.resource.query(command)
+
+    def set_temperature_setpoint(self, channel, T):
+        channel = {'A': 1, 'B': 2, 'C': 3, 'D': 4}[channel]
+        command = "SETP {channel},{value}".format(channel=channel, value=T)
+        self.resource.write(command)
