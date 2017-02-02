@@ -52,7 +52,11 @@ class Frontend(tk.Frame):
 
         self.fig1 = matplotlib.figure.Figure()
         self.ax1 = self.fig1.add_subplot(111)
-        self.ax1.plot([1,2,3],[1,4,9])
+        self.ax1.plot()
+
+        self.fig2 = matplotlib.figure.Figure()
+        self.ax2 = self.fig2.add_subplot(111)
+        self.ax2.plot()
 
         frame2 = tk.Frame(self)
 
@@ -96,7 +100,7 @@ class Frontend(tk.Frame):
         frame.pack(in_=frame1, side=tk.TOP, fill=tk.X, expand=1)
 
         frame = tk.Frame(self)
-        canvas = FigureCanvasTkAgg(self.fig1, master=frame)
+        canvas = FigureCanvasTkAgg(self.fig2, master=frame)
         canvas.show()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         toolbar = NavigationToolbar2TkAgg(canvas, frame)
@@ -141,10 +145,13 @@ class Frontend(tk.Frame):
         p = Thread(target=self.zmq_loop)
         p.start()
 
-    def update_plot(self):
+    def update_plots(self):
         self.ax1.clear()
         self.ax1.plot(range(len(self.temperatures_A)), self.temperatures_A)
         self.fig1.canvas.draw()
+        self.ax2.clear()
+        self.ax2.plot(range(len(self.temperatures_B)), self.temperatures_B)
+        self.fig2.canvas.draw()
 
     def zmq_loop(self):
         context = zmq.Context()
@@ -159,13 +166,12 @@ class Frontend(tk.Frame):
                 self.temperatures_A.append(message['temperature'])
             elif message['channel'] == 'B':
                 self.temperatures_B.append(message['temperature'])
-            print(message)
             #self.data_array.append(message['T'])
 
             # Limit how often we update the graph as this is a slow operation
-            if time.time() - self.last_time >= 1:
+            if time.time() - self.last_time >= 0.25:
                 self.last_time = time.time()
-                self.update_plot()
+                self.update_plots()
 
 
 if __name__ == '__main__':
