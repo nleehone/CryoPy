@@ -47,11 +47,9 @@ class Driver(object):
     def run(self):
         while True:
             command = self.driver_socket.recv_json()
-            # Command:
-            # {method: set/get, cmd: ()}
-            print(command)
+
             if command['METHOD'] == 'SET':
-                self.set(command['cmd'])
+                self.set(command['CMD'])
                 self.set_temperature(command['T'])
                 self.driver_socket.send_json({})
             elif command['METHOD'] == 'GET':
