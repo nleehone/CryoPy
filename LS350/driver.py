@@ -10,7 +10,7 @@ class Driver(object):
     def __init__(self, driver_port):
         self.context = zmq.Context()
         rm = visa.ResourceManager()
-        self.LS350 = LS350(rm.open_resource('ASRL1::INSTR'))
+        self.LS350 = LS350(rm.open_resource('ASRL6::INSTR'))
 
         self.driver_socket = self.context.socket(zmq.REP)
         self.driver_socket.bind('tcp://*:{}'.format(driver_port))
@@ -27,14 +27,33 @@ class Driver(object):
         print(temp)
         return temp
 
+    def get_sens(self):
+        return self.LS350.get_sensor('A')
+
+    def set(self, command):
+        {''}[command]()
+
+    def identify(self, params):
+        return self.LS350.identification_query()
+
+    def get(self, command, params):
+        return {
+            'Identitfy': self.identify,
+            'Temperature A': self.get_temperature,
+            'Sens': self.get_sens
+        }[command](params)
+
     def run(self):
         while True:
             command = self.driver_socket.recv_json()
-            print(command)
-            if command['cmd'] == 'set':
+            # Command:
+            # {method: set/get, cmd: ()}
+            if command['method'] == 'set':
+                self.set(command['cmd'])
                 self.set_temperature(command['T'])
                 self.driver_socket.send_json({})
-            elif command['cmd'] == 'get':
+            elif command['method'] == 'get':
+                value = self.get(command['cmd'], command['pars'])
                 self.driver_socket.send_json({'T': self.get_temperature()})
 
 

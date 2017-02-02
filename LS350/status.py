@@ -14,7 +14,10 @@ class StatusWindow(tk.Frame):
         self.status[row] = label
 
         def spawn_proc(port):
-            self.subprocesses[row] = subprocess.Popen(['python3', process, str(port)])
+            try:
+                self.subprocesses[row] = subprocess.Popen(['python3', process, str(port)])
+            except:
+                self.subprocesses[row] = subprocess.Popen(['python', process, str(port)])
 
         button = tk.Button(self, text='Start', command=lambda: spawn_proc(self.port.get()))
         button.grid(row=row, column=2)

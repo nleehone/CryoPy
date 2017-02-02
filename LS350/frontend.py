@@ -22,6 +22,17 @@ class Frontend(tk.Frame):
         context = zmq.Context()
         self.socket = context.socket(zmq.REQ)
         self.socket.connect('tcp://localhost:5559')
+        self.socket.setsockopt(zmq.LINGER, 0)
+
+        self.socket.send_json({'method': 'get', 'cmd': 'Identify', 'params': ''})
+        #self.identity.set(self.socket.recv_json())
+
+        poller = zmq.Poller()
+        poller.register(self.socket, zmq.POLLIN)
+        if poller.poll(100): # 10s timeout in milliseconds
+            self.identity.set(self.socket.recv_json())
+        else:
+            self.identity.set("No Driver found")
 
     def create_gui(self):
         self.f = matplotlib.figure.Figure()
@@ -41,6 +52,12 @@ class Frontend(tk.Frame):
         label.pack(side=tk.LEFT)
         entry.pack(fill=tk.X)
         entry.bind('<Return>', self.command)
+
+        label = tk.Label(self, text="Identity: ")
+        label.pack(side=tk.LEFT)
+        self.identity = tk.StringVar()
+        label = tk.Label(self, textvariable=self.identity)
+        label.pack(side=tk.LEFT)
 
     def command(self, event):
         val = self.set_T.get()
