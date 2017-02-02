@@ -18,7 +18,7 @@ class Acquirer(object):
     def run(self):
         while True:
             # Get the data from the instrument driver
-            self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'temperature', 'PARS': ''})
+            self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'temperature', 'PARS': {'channel': 'A'}})
             temp = self.driver_socket.recv_json()
 
             # Publish the data for other components to use
