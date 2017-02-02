@@ -53,7 +53,8 @@ class LS350(Driver):
         Example
         LSCI,MODEL350,1234567/1234567,1.0
         """
-        return self.resource.query("*IDN?")
+        val = self.resource.query("*IDN?")
+        return val
 
     def reset_instrument(self):
         """

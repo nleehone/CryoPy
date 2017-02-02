@@ -17,12 +17,17 @@ class Controller(object):
 
     def run(self):
         while True:
-            T = self.command_socket.recv_json()['Set T']
-            self.driver_socket.send_json({'cmd': 'set', 'T': T})
-            print("Sent")
-            self.driver_socket.recv_json()
-            print("Sent1")
-            self.command_socket.send(b'')
+            cmd = self.command_socket.recv_json()
+            print(cmd)
+            self.driver_socket.send_json(cmd)
+            val = self.driver_socket.recv_json()
+            print(val)
+            #T = self.command_socket.recv_json()['Set T']
+            #self.driver_socket.send_json({'cmd': 'set', 'T': T})
+            #print("Sent")
+            #self.driver_socket.recv_json()
+            #print("Sent1")
+            self.command_socket.send_json(val)
 
 
 if __name__ == '__main__':

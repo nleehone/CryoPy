@@ -1,8 +1,8 @@
 import visa
 import numpy as np
-import instrument_example.instrument as instr
 import zmq
 import sys
+sys.path.append('../')
 from drivers import LS350
 
 
@@ -34,11 +34,12 @@ class Driver(object):
         {''}[command]()
 
     def identify(self, params):
+        print("IDN")
         return self.LS350.identification_query()
 
     def get(self, command, params):
         return {
-            'Identitfy': self.identify,
+            'Identify': self.identify,
             'Temperature A': self.get_temperature,
             'Sens': self.get_sens
         }[command](params)
@@ -48,13 +49,14 @@ class Driver(object):
             command = self.driver_socket.recv_json()
             # Command:
             # {method: set/get, cmd: ()}
+            print(command)
             if command['method'] == 'set':
                 self.set(command['cmd'])
                 self.set_temperature(command['T'])
                 self.driver_socket.send_json({})
             elif command['method'] == 'get':
-                value = self.get(command['cmd'], command['pars'])
-                self.driver_socket.send_json({'T': self.get_temperature()})
+                value = self.get(command['cmd'], command['params'])
+                self.driver_socket.send_json(value)
 
 
 if __name__ == '__main__':

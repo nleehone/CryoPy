@@ -29,7 +29,7 @@ class Frontend(tk.Frame):
 
         poller = zmq.Poller()
         poller.register(self.socket, zmq.POLLIN)
-        if poller.poll(100): # 10s timeout in milliseconds
+        if poller.poll(2000): # 2s timeout in milliseconds
             self.identity.set(self.socket.recv_json())
         else:
             self.identity.set("No Driver found")
