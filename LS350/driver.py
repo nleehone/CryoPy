@@ -1,4 +1,5 @@
 import visa
+import time
 import numpy as np
 import zmq
 import sys
@@ -25,7 +26,6 @@ class Driver(object):
         #instrument = instr.Instrument()
         #return instrument.get_temperature() + 10.0*(np.random.rand()*2.0 - 1.0)
         temp = self.LS350.get_temperature('A')
-        print(temp)
         return temp
 
     def get_sens(self):
@@ -34,9 +34,9 @@ class Driver(object):
     def set(self, command, params):
         try:
             {
-                'temperature_setpoint': self.set_temperature
+                'temperature_setpoint': self.set_temperature_setpoint
              }[command](params)
-        except KeyError as e:
+        except Exception as e:
             print(e)
 
     def get_idn(self, params):
@@ -47,10 +47,10 @@ class Driver(object):
             return {
                 'identify': self.get_idn,
                 'temperature': self.get_temperature,
-                'sensor': self.get_sensor,
+                #'sensor': self.get_sensor,
                 'sens': self.get_sens
             }[command](params)
-        except KeyError as e:
+        except Exception as e:
             print(e)
 
     def run(self):
