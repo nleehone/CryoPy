@@ -7,6 +7,23 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 matplotlib.use('TkAgg')
 
 
+def get(socket, command, params, timeout=1000):
+    socket.send_json({'METHOD': 'GET', 'CMD': command, 'PARS': params})
+    if timeout > 0:
+        poller = zmq.Poller()
+        poller.register(socket, zmq.POLLIN)
+        if poller.poll(timeout):
+            return socket.recv_json()
+        else:
+            return "ERROR: Timeout reached"
+    else:
+        return socket.recv_json()
+
+
+def set(socket, command, params):
+    socket.send_json({'METHOD': 'SET', 'CMD': command, 'PARS': params})
+
+
 class Frontend(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -24,15 +41,7 @@ class Frontend(tk.Frame):
         self.socket.connect('tcp://localhost:5559')
         self.socket.setsockopt(zmq.LINGER, 0)
 
-        self.socket.send_json({'method': 'get', 'cmd': 'Identify', 'params': ''})
-        #self.identity.set(self.socket.recv_json())
-
-        poller = zmq.Poller()
-        poller.register(self.socket, zmq.POLLIN)
-        if poller.poll(2000): # 2s timeout in milliseconds
-            self.identity.set(self.socket.recv_json())
-        else:
-            self.identity.set("No Driver found")
+        self.identity.set(get(self.socket, 'identify', '', 1000))
 
     def create_gui(self):
         self.f = matplotlib.figure.Figure()

@@ -39,9 +39,9 @@ class Driver(object):
 
     def get(self, command, params):
         return {
-            'Identify': self.identify,
-            'Temperature A': self.get_temperature,
-            'Sens': self.get_sens
+            'identify': self.identify,
+            'temperature A': self.get_temperature,
+            'sens': self.get_sens
         }[command](params)
 
     def run(self):
@@ -50,12 +50,12 @@ class Driver(object):
             # Command:
             # {method: set/get, cmd: ()}
             print(command)
-            if command['method'] == 'set':
+            if command['METHOD'] == 'SET':
                 self.set(command['cmd'])
                 self.set_temperature(command['T'])
                 self.driver_socket.send_json({})
-            elif command['method'] == 'get':
-                value = self.get(command['cmd'], command['params'])
+            elif command['METHOD'] == 'GET':
+                value = self.get(command['CMD'], command['PARS'])
                 self.driver_socket.send_json(value)
 
 
