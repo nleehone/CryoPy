@@ -23,10 +23,8 @@ class Driver(object):
             print(e)
 
     def get_temperature(self, params):
-        #instrument = instr.Instrument()
-        #return instrument.get_temperature() + 10.0*(np.random.rand()*2.0 - 1.0)
-        temp = self.LS350.get_temperature('A')
-        return temp
+        temp = self.LS350.get_temperature(params['channel'])
+        return {'channel': params['channel'], 'temperature': temp}
 
     def get_sens(self):
         return self.LS350.get_sensor('A')
