@@ -1,17 +1,15 @@
 import zmq
 from threading import Thread
 
+from component import Component
 
-class DataStore(object):
+
+class DataStore(Component):
     def __init__(self, command_port, acquirer_port):
-        self.context = zmq.Context()
-
+        super().__init__(command_port)
         self.acquirer_socket = self.context.socket(zmq.SUB)
         self.acquirer_socket.connect('tcp://localhost:{}'.format(acquirer_port))
         self.acquirer_socket.setsockopt_string(zmq.SUBSCRIBE, '')
-
-        self.command_socket = self.context.socket(zmq.REP)
-        self.command_socket.bind('tcp://*:{}'.format(command_port))
 
         Thread(target=self.run_command).start()
 

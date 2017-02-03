@@ -5,16 +5,21 @@ import zmq
 import sys
 sys.path.append('../')
 from drivers import LS350
+from component import *
 
 
-class Driver(object):
+class Driver(Component):
+    """Single point of communication with the instrument
+
+    Having a common point of communication prevents multiple parts of the system from trying to access the hardware
+    at the same time. This is enforced by the ZMQ command socket, which only receives one message at a time.
+
+    It is up to the user to make sure that only one instance of the Driver is ever running.
+    """
     def __init__(self, driver_port):
-        self.context = zmq.Context()
+        super().__init__(driver_port)
         rm = visa.ResourceManager()
         self.LS350 = LS350(rm.open_resource('ASRL6::INSTR'))
-
-        self.driver_socket = self.context.socket(zmq.REP)
-        self.driver_socket.bind('tcp://*:{}'.format(driver_port))
 
     def set_temperature_setpoint(self, params):
         try:
@@ -53,13 +58,13 @@ class Driver(object):
 
     def run(self):
         while True:
-            command = self.driver_socket.recv_json()
+            command = self.command_socket.recv_json()
             if command['METHOD'] == 'SET':
                 self.set(command['CMD'], command['PARS'])
-                self.driver_socket.send_json({})
+                value = {}
             elif command['METHOD'] == 'GET':
                 value = self.get(command['CMD'], command['PARS'])
-                self.driver_socket.send_json(value)
+            self.command_socket.send_json(value)
 
 
 if __name__ == '__main__':

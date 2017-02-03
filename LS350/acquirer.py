@@ -1,19 +1,17 @@
 import zmq
 import time
 
+from component import Component
 
-class Acquirer(object):
+
+class Acquirer(Component):
     def __init__(self, command_port, pub_port, driver_port):
-        self.context = zmq.Context()
-
+        super().__init__(command_port)
         self.pub_socket = self.context.socket(zmq.PUB)
         self.pub_socket.bind('tcp://*:{}'.format(pub_port))
 
         self.driver_socket = self.context.socket(zmq.REQ)
         self.driver_socket.connect('tcp://localhost:{}'.format(driver_port))
-
-        self.command_socket = self.context.socket(zmq.REP)
-        self.command_socket.bind('tcp://*:{}'.format(command_port))
 
     def run(self):
         while True:
