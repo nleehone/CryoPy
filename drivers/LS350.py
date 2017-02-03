@@ -26,7 +26,7 @@ class LS350(Driver):
 
     def clear_interface(self):
         """
-        *CLS[term]
+        *CLS
 
         Clears the bits in the Status Byte Register, Standard Event Status Register, and Operation Event Register, and
         terminates all pending operations. Clears the interface, but not the controller. The related controller command
@@ -63,6 +63,21 @@ class LS350(Driver):
         Sets controller parameters to power-up settings.
         """
         self.resource.write("*RST")
+
+    def heater_output(self, channel):
+        pass
+
+    def get_heater_range(self, output):
+        """
+        RANGE? <output>
+        """
+        self.resource.query("RANGE? {}".format(output))
+
+    def set_heater_range(self, output, range):
+        """
+        RANGE <output>,<range>
+        """
+        self.resource.write("RANGE {},{}".format(output, range))
 
     def get_temperature(self, channel, units=Temperature.K, sensor=False):
         """
