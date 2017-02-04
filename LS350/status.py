@@ -1,5 +1,7 @@
 import tkinter as tk
 import subprocess
+import sys
+sys.path.append('../')
 
 
 class StatusWindow(tk.Frame):

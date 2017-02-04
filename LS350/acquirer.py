@@ -1,5 +1,7 @@
 import zmq
 import time
+import sys
+sys.path.append('../')
 
 from component import Component
 

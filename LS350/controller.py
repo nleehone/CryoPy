@@ -1,4 +1,6 @@
 import zmq
+import sys
+sys.path.append('../')
 from component import Component
 
 
