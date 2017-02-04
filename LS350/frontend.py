@@ -3,9 +3,59 @@ import zmq
 from threading import Thread
 import tkinter as tk
 import matplotlib
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-matplotlib.use('TkAgg')
+from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
+from matplotlib.backends.backend_gtk3 import NavigationToolbar2GTK3 as NavigationToolbar
+matplotlib.use('Gtk')
 from collections import deque
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+
+class WindowHandler(object):
+    def onDeleteWindow(self, *args):
+        Gtk.main_quit(*args)
+    def onButtonPressed(self, button):
+        print("Hello")
+
+
+builder = Gtk.Builder()
+builder.add_from_file('test.glade')
+builder.connect_signals(WindowHandler())
+
+l = builder.get_object('channel_A_container')
+fig = matplotlib.figure.Figure()
+ax = fig.add_subplot(111)
+ax.plot([1,2,3],[1,4,9])
+
+canvas = FigureCanvas(fig)
+l.pack_start(canvas, True, True, 0)
+
+# below is optional if you want the navigation toolbar
+navToolbar = NavigationToolbar(canvas, l)
+navToolbar.lastDir = '/var/tmp/'
+l.pack_start(navToolbar, False, True, 0)
+navToolbar.show()
+
+l = builder.get_object('channel_B_container')
+fig = matplotlib.figure.Figure()
+ax = fig.add_subplot(111)
+ax.plot([1,2,3],[1,4,9])
+
+canvas = FigureCanvas(fig)
+l.pack_start(canvas, True, True, 0)
+
+# below is optional if you want the navigation toolbar
+navToolbar = NavigationToolbar(canvas, l)
+navToolbar.lastDir = '/var/tmp/'
+l.pack_start(navToolbar, False, False, 0)
+navToolbar.show()
+
+win = builder.get_object('window1')
+win.show_all()
+Gtk.main()
+
 
 
 def get(socket, command, params, timeout=1000):
