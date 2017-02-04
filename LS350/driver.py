@@ -15,6 +15,10 @@ class Driver(Component):
     at the same time. This is enforced by the ZMQ command socket, which only receives one message at a time.
 
     It is up to the user to make sure that only one instance of the Driver is ever running.
+
+    Driver commands:
+    GET: temperature {channel} -> {channel, temperature}
+    GET: identity {} -> {identity}
     """
     def __init__(self, driver_port):
         super().__init__(driver_port)
@@ -43,12 +47,12 @@ class Driver(Component):
             print(e)
 
     def get_idn(self, params):
-        return self.LS350.identification_query()
+        return {'identity': self.LS350.identification_query()}
 
     def get(self, command, params):
         try:
             return {
-                'identify': self.get_idn,
+                'identity': self.get_idn,
                 'temperature': self.get_temperature,
                 #'sensor': self.get_sensor,
                 'sens': self.get_sens
@@ -59,6 +63,9 @@ class Driver(Component):
     def run(self):
         while True:
             command = self.command_socket.recv_json()
+            # The instrument needs to gaurantee a 50ms delay between messages
+            #
+            time.sleep(0.05)
             if command['METHOD'] == 'SET':
                 self.set(command['CMD'], command['PARS'])
                 value = {}
