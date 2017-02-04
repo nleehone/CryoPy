@@ -22,6 +22,14 @@ class Acquirer(Component):
             self.pub_socket.send_json(self.driver_socket.recv_json())
             self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'temperature', 'PARS': {'channel': 'B'}})
             self.pub_socket.send_json(self.driver_socket.recv_json())
+            self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'heater_output', 'PARS': {'output': 1}})
+            self.pub_socket.send_json(self.driver_socket.recv_json())
+            self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'heater_output', 'PARS': {'output': 2}})
+            self.pub_socket.send_json(self.driver_socket.recv_json())
+            self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'heater_range', 'PARS': {'output': 1}})
+            self.pub_socket.send_json(self.driver_socket.recv_json())
+            self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'heater_range', 'PARS': {'output': 1}})
+            self.pub_socket.send_json(self.driver_socket.recv_json())
 
             time.sleep(0.5)
 
