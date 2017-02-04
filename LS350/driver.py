@@ -19,6 +19,10 @@ class Driver(Component):
     Driver commands:
     GET: temperature {channel} -> {channel, temperature}
     GET: identity {} -> {identity}
+    GET: heater_output {output} -> {output, percent}
+    GET: heater_range {output} -> {output, range}
+
+    SET: temperature_setpoint {channel} -> {}
     """
     def __init__(self, driver_port):
         super().__init__(driver_port)
@@ -34,6 +38,14 @@ class Driver(Component):
     def get_temperature(self, params):
         temp = self.LS350.get_temperature(params['channel'])
         return {'channel': params['channel'], 'temperature': temp}
+
+    def get_heater_output(self, params):
+        percent = self.LS350.get_heater_output(params['output'])
+        return {'output': params['output'], 'percent': percent}
+
+    def get_heater_range(self, params):
+        range = self.LS350.get_heater_range(params['output'])
+        return {'output': params['output'], 'range': range}
 
     def get_sens(self):
         return self.LS350.get_sensor('A')
@@ -54,6 +66,8 @@ class Driver(Component):
             return {
                 'identity': self.get_idn,
                 'temperature': self.get_temperature,
+                'heater_output': self.get_heater_output,
+                'heater_range': self.get_heater_range,
                 #'sensor': self.get_sensor,
                 'sens': self.get_sens
             }[command](params)

@@ -64,14 +64,23 @@ class LS350(Driver):
         """
         self.resource.write("*RST")
 
-    def heater_output(self, channel):
-        pass
+    def get_heater_output(self, output):
+        """
+        HTR? <output> (for output 1, 2)
+        AOUT? <output> (for outputs 3, 4)
+        """
+        if output in [1, 2]:
+            return float(self.resource.query("HTR? {}".format(output)))
+        elif output in [3, 4]:
+            return float(self.resource.query("AOUT? {}".format(output)))
+        # Output not valid: return a negative number
+        return -1
 
     def get_heater_range(self, output):
         """
         RANGE? <output>
         """
-        self.resource.query("RANGE? {}".format(output))
+        return int(self.resource.query("RANGE? {}".format(output)))
 
     def set_heater_range(self, output, range):
         """
