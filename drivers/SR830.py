@@ -418,3 +418,10 @@ class SR830(Driver):
         """
         return int(self.query("*ESR?"))
 
+    def get_status(self):
+        """
+        LIAS?
+        Queries the lock-in status byte. The byte is cleared after reading.
+        """
+        return int(self.query("LIAS?"))
+

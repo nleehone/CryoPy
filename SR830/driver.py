@@ -1,3 +1,4 @@
+from .config import *
 import visa
 import time
 import sys
@@ -36,6 +37,7 @@ class Driver(Driver):
             'local_or_remote_state': self.get_local_or_remote_state,
             'standard_event_status_byte': self.get_standard_event_status_byte,
             'identify': self.identify,
+            'status': self.get_status
         }
 
         self.set_commands = {
@@ -169,3 +171,10 @@ class Driver(Driver):
 
     def get_standard_event_status_byte(self, pars):
         return self.SR830.get_standard_event_status_byte()
+
+    def get_status(self, pars):
+        return self.SR830.get_status()
+
+
+if __name__ == '__main__':
+    Driver(driver_port).run()
