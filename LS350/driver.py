@@ -1,7 +1,5 @@
 import visa
 import time
-import numpy as np
-import zmq
 import sys
 sys.path.append('../')
 from drivers import LS350
