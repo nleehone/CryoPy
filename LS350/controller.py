@@ -18,8 +18,10 @@ class Controller(Component):
     def run(self):
         while True:
             cmd = self.command_socket.recv_json()
+            print(cmd)
             self.driver_socket.send_json(cmd)
             val = self.driver_socket.recv_json()
+            print(val)
             self.command_socket.send_json(val)
 
 

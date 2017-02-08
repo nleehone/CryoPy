@@ -151,3 +151,20 @@ class LS350(Driver):
         channel = {'A': 1, 'B': 2, 'C': 3, 'D': 4}[channel]
         command = "SETP {channel},{value}".format(channel=channel, value=T)
         self.resource.write(command)
+        
+    def get_all_temperature(self):
+        command = "RDGST?A;RDGST?B;RDGST?C;RDGST?D;" + \
+                    "KRDG?A;KRDG?B;KRDG?C;KRDG?D;" + \
+                    "SRDG?A;SRDG?B;SRDG?C;SRDG?D;" + \
+                    "SETP?1;SETP?2;SETP?3;SETP?4"
+                    
+        return self.resource.query(command)
+        
+    def get_all_heater(self):
+        command = "HTRST?1;HTRST?2;" + \
+                    "RANGE?1;RANGE?2;RANGE?3;RANGE?4;" + \
+                    "HTR?1;HTR?2;AOUT?3;AOUT?4;" + \
+                    "MOUT?1;MOUT?2;MOUT?3;MOUT?4;" + \
+                    "PID?1;PID?2;PID?3;PID?4"
+                    
+        return self.resource.query(command)

@@ -34,6 +34,12 @@ class Driver(Component):
             self.LS350.set_temperature_setpoint(params['channel'], params['setpoint'])
         except KeyError as e:
             print(e)
+            
+    def set_heater_range(self, params):
+        try:
+            self.LS350.set_heater_range(params['output'], params['range'])
+        except KeyError as e:
+            print(e)
 
     def get_temperature(self, params):
         temp = self.LS350.get_temperature(params['channel'])
@@ -53,17 +59,23 @@ class Driver(Component):
     def set(self, command, params):
         try:
             {
-                'temperature_setpoint': self.set_temperature_setpoint
+                'temperature_setpoint': self.set_temperature_setpoint,
+                'heater_range': self.set_heater_range
              }[command](params)
         except Exception as e:
             print(e)
 
     def get_idn(self, params):
         return {'identity': self.LS350.identification_query()}
+                
+    def get_all(self, params):
+        return {'temperature': self.LS350.get_all_temperature(), 
+                'heater': self.LS350.get_all_heater()}
 
     def get(self, command, params):
         try:
             return {
+                'all': self.get_all,
                 'identity': self.get_idn,
                 'temperature': self.get_temperature,
                 'heater_output': self.get_heater_output,
