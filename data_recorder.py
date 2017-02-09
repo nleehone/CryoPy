@@ -66,4 +66,4 @@ if __name__ == '__main__':
             if tag == 'lock-in':
                 lockin_ds.add_data(data)
             elif tag == 'LS350':
-                print(data)
+                t_ds.add_data(data)

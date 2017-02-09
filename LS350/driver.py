@@ -70,6 +70,9 @@ class Driver(Component):
         return {'temperature': self.LS350.get_all_temperature(), 
                 'heater': self.LS350.get_all_heater()}
 
+    def get_sensor(self, params):
+        return self.LS350.get_sensor(params)
+
     def get(self, command, params):
         try:
             return {
@@ -78,7 +81,7 @@ class Driver(Component):
                 'temperature': self.get_temperature,
                 'heater_output': self.get_heater_output,
                 'heater_range': self.get_heater_range,
-                #'sensor': self.get_sensor,
+                'sensor': self.get_sensor,
                 'sens': self.get_sens
             }[command](params)
         except Exception as e:
