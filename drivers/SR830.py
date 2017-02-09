@@ -2,36 +2,34 @@ import pyvisa
 from enum import IntEnum, unique
 from .driver import Driver
 
-
-@unique
-class Sensitivity(IntEnum):
-    S_2nVfA = 0
-    S_5nVfA = 1
-    S_10nVfA = 2
-    S_20nVfA = 3
-    S_50nVfA = 4
-    S_100nVfA = 5
-    S_200nVfA = 6
-    S_500nVfA = 7
-    S_1uVpA = 8
-    S_2uVpA = 9
-    S_5uVpA = 10
-    S_10uVpA = 11
-    S_20uVpA = 12
-    S_50uVpA = 13
-    S_100uVpA = 14
-    S_200uVpA = 15
-    S_500uVpA = 16
-    S_1mVnA = 17
-    S_2mVnA = 18
-    S_5mVnA = 19
-    S_10mVnA = 20
-    S_20mVnA = 21
-    S_50mVnA = 22
-    S_100mVnA = 23
-    S_200mVnA = 24
-    S_500mVnA = 25
-    S_1VuA = 26
+SR830sensitivity = ((0, '2 nV/fA', 2e-9),
+ (1, '5 nV/fA', 5e-9),
+ (2, '10 nV/fA', 10e-9),
+ (3, '20 nV/fA', 20e-9),
+ (4, '50 nV/fA', 50e-9),
+ (5, '100 nV/fA', 100e-9),
+ (6, '200 nV/fA', 200e-9),
+ (7, '500 nV/fA', 500e-9),
+ (8, '1 μV/pA', 1e-6),
+ (9, '2 μV/pA', 2e-6),
+ (10, '5 μV/pA', 5e-6),
+ (11, '10 μV/pA', 10e-6),
+ (12, '20 μV/pA', 20e-6),
+ (13, '50 μV/pA', 50e-6),
+ (14, '100 μV/pA', 100e-6),
+ (15, '200 μV/pA', 200e-6),
+ (16, '500 μV/pA', 500e-6),
+ (17, '1 mV/nA', 1e-3),
+ (18, '2 mV/nA', 2e-3),
+ (19, '5 mV/nA', 5e-3),
+ (20, '10 mV/nA', 10e-3),
+ (21, '20 mV/nA', 20e-3),
+ (22, '50 mV/nA', 50e-3),
+ (23, '100 mV/nA', 100e-3),
+ (24, '200 mV/nA', 200e-3),
+ (25, '500 mV/nA', 500e-3),
+ (26, '1 V/μA', 1),
+ )
 
 
 @unique
@@ -58,18 +56,27 @@ class TimeConstant(IntEnum):
     TC_30ks = 19
 
 
-class SR830(Driver):
+class SR830Driver(Driver):
     def __init__(self, resource):
         super().__init__(resource)
 
         try:
             # Try to setup the device for serial operation
-            resource.baud_rate = 57600
-            resource.data_bits = 7
-            resource.parity = pyvisa.constants.Parity.odd
+            resource.baud_rate = 19200
+            resource.data_bits = 8
+            resource.parity = pyvisa.constants.Parity.none
+            resource.stop_bits = pyvisa.constants.StopBits.one
+            resource.read_termination = resource.CR
         except AttributeError:
             pass
-
+        
+    def multi_query(self, query_string):
+        """
+        Custom query. Can be used to query multiple parameters in one go
+        """
+        self.resource.write(query_string)
+        return [self.resource.read() for i in range(len(query_string.split(";")))]
+    
     def get_phase(self):
         """
         PHAS?
@@ -248,14 +255,14 @@ class SR830(Driver):
         SENS?
         Queries the sensitivity. For conversion of value to sensitivity see Sensitivity enum
         """
-        return Sensitivity(int(self.query("SENS?")))
+        return int(self.query("SENS?"))
 
     def set_sensitivity(self, sens):
         """
         SENS {sens}
         Sets the sensitivity. For conversion of value to sensitivity see Sensitivity enum
         """
-        self.write("SENS {sens}".format(int(sens)))
+        self.write("SENS {}".format(str(sens)))
 
     def get_reserve_mode(self):
         """
@@ -362,7 +369,7 @@ class SR830(Driver):
         if len(parameters) < 2 or len(parameters) > 6:
             raise ValueError("The number of parameters in a SNAP measurement must be between 2 and 6 inclusive.")
 
-        return self.query("SNAP?{}".format(",".join(parameters)))
+        return self.query("SNAP?{}".format(",".join(map(str, parameters))))
 
     def reset(self):
         """

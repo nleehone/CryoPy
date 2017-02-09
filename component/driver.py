@@ -26,6 +26,7 @@ class Driver(Component):
     def run(self):
         while True:
             command = self.command_socket.recv_json()
+            print(command)
             if command['METHOD'] == 'SET':
                 self.set(command['CMD'], command['PARS'])
                 value = {}

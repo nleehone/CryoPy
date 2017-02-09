@@ -1,9 +1,9 @@
-from .config import *
+from SR830.config import *
 import visa
 import time
 import sys
 sys.path.append('../')
-from drivers import SR830
+from drivers import SR830Driver
 from component import *
 
 
@@ -15,8 +15,8 @@ class Driver(Driver):
     def __init__(self, driver_port):
         super().__init__(driver_port)
         rm = visa.ResourceManager()
-        self.SR830 = SR830(rm.open_resource('ASRL4::INSTR'))
-
+        self.SR830 = SR830Driver(rm.open_resource('ASRL4::INSTR'))
+        print(self.SR830.identify())
         self.get_commands = {
             'phase': self.get_phase,
             'reference_source': self.get_reference_source,
@@ -37,7 +37,8 @@ class Driver(Driver):
             'local_or_remote_state': self.get_local_or_remote_state,
             'standard_event_status_byte': self.get_standard_event_status_byte,
             'identify': self.identify,
-            'status': self.get_status
+            'status': self.get_status,
+            'query': self.query
         }
 
         self.set_commands = {
@@ -58,8 +59,15 @@ class Driver(Driver):
             'output_interface': self.set_output_interface,
             'reset': self.reset,
             'local_or_remote_state': self.set_local_or_remote_state,
-            'clear_status_registers': self.clear_status_registers
+            'clear_status_registers': self.clear_status_registers,
+            'write': self.write
         }
+        
+    def query(self, pars):
+        return self.SR830.multi_query(pars)
+        
+    def write(self, pars):
+        self.SR830.write(pars)
 
     def set_phase(self, pars):
         self.SR830.set_phase(pars['phase'])
@@ -89,7 +97,7 @@ class Driver(Driver):
         self.SR830.set_input_line_notch_filter_status(pars['notch_filter'])
 
     def set_sensitivity(self, pars):
-        self.SR830.set_sensitivity(pars['sensitivity'])
+        self.SR830.set_sensitivity(pars)
 
     def set_reserve_mode(self, pars):
         self.SR830.set_reserve_mode(pars['mode'])

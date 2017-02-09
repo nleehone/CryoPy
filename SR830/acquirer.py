@@ -1,5 +1,5 @@
 from component import Component
-from .config import *
+from SR830.config import *
 import zmq
 import time
 import sys
@@ -18,15 +18,21 @@ class Acquirer(Component):
     def run(self):
         while True:
             # Get the data from the instrument driver
+            self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'snap_measurement', 'PARS': [1,2]})
+            data = self.driver_socket.recv_json()
             self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'status', 'PARS': ''})
             status = self.driver_socket.recv_json()
             self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'standard_event_status_byte', 'PARS': ''})
             event_status = self.driver_socket.recv_json()
-            self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'snap_measurement', 'PARS': [1,2]})
-            data = self.driver_socket.recv_json()
-            self.pub_socket.send_json(data)
+            
+            res = {'data': data,
+                   'status': status,
+                   'event_status': event_status,
+                   }
+            print(time.time(), res)
+            self.pub_socket.send_json(res)
 
-            time.sleep(0.1)
+            time.sleep(1)
 
 
 if __name__ == '__main__':
