@@ -30,12 +30,12 @@ class Acquirer(Component):
             print(data)
             print(not (status&4))
             x, y = map(float, data)
-            res = {'x': x,
-                   'y': y,
-                   'valid': not (status & 4),
-                   'status': status,
-                   'event_status': event_status,
-                   'time': measurement_time
+            res = {'Lock-In X': x,
+                   'Lock-In Y': y,
+                   'Valid': not (status & 4),
+                   'Status': status,
+                   'Event_status': event_status,
+                   'Time': measurement_time
                    }
             print(time.time(), res)
             self.pub_socket.send_multipart([b'lock-in', json.dumps(res).encode('utf-8')])

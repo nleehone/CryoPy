@@ -4,11 +4,23 @@ import h5py
 import numpy as np
 import json
 
-def create_dataset(group, name, attrmap, typedef):
-    ds = group.create_dataset(name, (0, 1), maxshape=(None, len(typedef)), dtype=typedef)
-    for name, value in attrmap.items():
-        ds.attrs[name] = value
-    return ds
+
+class DataSet(object):
+    """
+    Encapsulation of a dataset and a counter to keep track of what row to write the data into
+    """
+    def __init__(self, group, name, attrmap, typedef):
+        self.ds = group.create_dataset(name, (0, 1), maxshape=(None, len(typedef)), dtype=typedef)
+        for name, value in attrmap.items():
+            self.ds.attrs[name] = value
+        self.count = 0
+        self.typedef = typedef
+
+    def add_data(self, data):
+        self.ds.resize(self.count+1, axis=0)
+        self.ds[self.count] = (data[name] for name in self.typedef.names)
+        self.count += 1
+
 
 if __name__ == '__main__':
     context = zmq.Context()
@@ -28,9 +40,6 @@ if __name__ == '__main__':
         
         raw_data = f.create_group('raw_data')
         
-        #t_data = raw_data.create_group('temperature')
-        #t_data.attrs['instrument'] = 'LS350'
-        
         lockin_type = np.dtype([
                             ('Time', float),
                             ('Lock-In X', float),
@@ -45,24 +54,16 @@ if __name__ == '__main__':
                                ('SensA', float),
                                ('SensB', float),
                                ])
-        
-        lockin_ds = create_dataset(raw_data, 'Lock-In', {'instrument': 'SR830'}, lockin_type)
-        t_ds = create_dataset(raw_data, 'Temperature', {'instrument': 'LS350'}, ls350_type)
 
-    
-        last_time = time.time()
+        lockin_ds = DataSet(raw_data, 'Lock-In', {'instrument': 'SR830'}, lockin_type)
+        t_ds = DataSet(raw_data, 'Temperature', {'instrument': 'LS350'}, ls350_type)
+
         count = 0
         while True:
             tag, data = map(lambda x: x.decode('utf-8'), socket.recv_multipart())
             data = json.loads(data)
             
             if tag == 'lock-in':
-                x, y = data['x'], data['y']
-                valid = data['valid']
-    
-                lockin_ds.resize(count+1,axis=0)
-                lockin_ds[count] = (data['time'], x, y, valid)
-                count += 1
+                lockin_ds.add_data(data)
             elif tag == 'LS350':
                 print(data)
-            
