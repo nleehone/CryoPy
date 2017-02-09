@@ -2,6 +2,7 @@ import zmq
 import time
 import sys
 sys.path.append('../')
+import json
 
 from component import Component
 
@@ -37,7 +38,7 @@ class Acquirer(Component):
             #self.pub_socket.send_json(data)
             self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'all', 'PARS': ''})
             data = self.driver_socket.recv_json()
-            self.pub_socket.send_json(data)
+            self.pub_socket.send_multipart([b'LS350', json.dumps(data).encode('utf-8')])
 
             time.sleep(0.1)
 

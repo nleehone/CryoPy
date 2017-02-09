@@ -95,7 +95,7 @@ class Controller(Component):
             print("No Overload")
             self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'sensitivity', 'PARS': ''})
             sensitivity = SR830sensitivity[self.driver_socket.recv_json()]
-            print(sensitivity)
+            print(sensitivity, value)
             if sensitivity[2]*self.lower_threshold >= abs(value):
                 print("Low")
                 self.high_count = 0
