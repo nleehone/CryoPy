@@ -105,7 +105,10 @@ class LS350(Driver):
         if sensor:
             command += "SRDG? {channel};"
 
-        return self.resource.query(command.format(channel=channel))
+        val = list(map(float, self.resource.query(command[:-1].format(channel=channel)).split(';')))
+        if len(val) == 1:
+            return val[0]
+        return val
 
     def get_temperatures(self, channels, units=Temperature.K, sensor=False):
         """
@@ -135,7 +138,7 @@ class LS350(Driver):
         Get the sensor value of a channel
         """
         self.check_channel(channel)
-        return self.resource.query("SRDG? {channel}".format(channel=channel))
+        return float(self.resource.query("SRDG? {channel}".format(channel=channel)))
 
     def get_sensors(self, channels):
         """

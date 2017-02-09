@@ -41,7 +41,7 @@ class Driver(Component):
 
     def get_temperature(self, params):
         temp = self.LS350.get_temperature(params['channel'])
-        return {'channel': params['channel'], 'temperature': temp}
+        return temp
 
     def get_heater_output(self, params):
         percent = self.LS350.get_heater_output(params['output'])
@@ -71,7 +71,7 @@ class Driver(Component):
                 'heater': self.LS350.get_all_heater()}
 
     def get_sensor(self, params):
-        return self.LS350.get_sensor(params)
+        return self.LS350.get_sensor(params['channel'])
 
     def get(self, command, params):
         try:
@@ -98,6 +98,7 @@ class Driver(Component):
                 value = {}
             elif command['METHOD'] == 'GET':
                 value = self.get(command['CMD'], command['PARS'])
+                print(value)
             self.command_socket.send_json(value)
 
 
