@@ -24,8 +24,11 @@ class Acquirer(Component):
             status = self.driver_socket.recv_json()
             self.driver_socket.send_json({'METHOD': 'GET', 'CMD': 'standard_event_status_byte', 'PARS': ''})
             event_status = self.driver_socket.recv_json()
-            
-            res = {'data': data,
+
+            x, y = map(float, data)
+            res = {'x': x,
+                   'y': y,
+                   'valid': ~(status & 4),
                    'status': status,
                    'event_status': event_status,
                    }

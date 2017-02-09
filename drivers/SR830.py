@@ -369,7 +369,7 @@ class SR830Driver(Driver):
         if len(parameters) < 2 or len(parameters) > 6:
             raise ValueError("The number of parameters in a SNAP measurement must be between 2 and 6 inclusive.")
 
-        return self.query("SNAP?{}".format(",".join(map(str, parameters))))
+        return self.query("SNAP?{}".format(",".join(map(str, parameters)))).split(',')
 
     def reset(self):
         """

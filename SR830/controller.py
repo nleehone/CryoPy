@@ -77,10 +77,8 @@ class Controller(Component):
             event_status = res['event_status']
             status = res['status']
 
-            print(res['data'])
-            
             if self.auto_range:
-                self.auto_range_func(status, float(res['data'].split(',')[0]))
+                self.auto_range_func(status, res['x'])
                 
                     
     def auto_range_func(self, status, value):
