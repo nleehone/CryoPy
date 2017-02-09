@@ -18,7 +18,7 @@ class DataSet(object):
 
     def add_data(self, data):
         self.ds.resize(self.count+1, axis=0)
-        self.ds[self.count] = (data[name] for name in self.typedef.names)
+        self.ds[self.count] = tuple(data[name] for name in self.typedef.names)
         self.count += 1
 
 
