@@ -15,7 +15,7 @@ class Driver(Driver):
     def __init__(self, driver_port):
         super().__init__(driver_port)
         rm = visa.ResourceManager()
-        self.Keithley6221 = Keithley6221Driver(rm.open_resource('ASRL4::INSTR'))
+        self.Keithley6221 = Keithley6221Driver(rm.open_resource('ASRL17::INSTR'))
         print(self.Keithley6221.identify())
         self.get_commands = {
             'get_compliance': self.get_compliance,
