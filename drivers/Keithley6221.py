@@ -59,3 +59,31 @@ class Keithley6221Driver(Driver):
         """
         return self.query("CALC:DATA:FRES")
 
+    def set_compliance(self, compliance):
+        """
+        SOURce:CURRent:COMPliance
+
+        Set the compliance (volts). Valid values are 0.1 to 105 inclusive.
+        """
+        self.write("SOUR:CURR:COMP {}".format(str(compliance)))
+
+    def get_compliance(self):
+        """
+        SOURce:CURRent:COMPliance?
+        Query the voltage compliance
+        """
+        return self.query("SOUR:CURR:COMPL?")
+
+    def set_filter_state(self, state):
+        """
+        SOURce:FILTer:STATe <b>
+        Enable or disable the analog filter
+        """
+        return self.query("SOUR:FILT:STAT {}".format(str(state)))
+
+    def get_filter_state(self):
+        """
+        SOURce:FILTer:STATe?
+        Query the state of the analog filter
+        """
+        return self.query("SOUR:FILT:STAT?")
