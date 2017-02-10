@@ -69,14 +69,7 @@ class SR830Driver(Driver):
             resource.read_termination = resource.CR
         except AttributeError:
             pass
-        
-    def multi_query(self, query_string):
-        """
-        Custom query. Can be used to query multiple parameters in one go
-        """
-        self.resource.write(query_string)
-        return [self.resource.read() for i in range(len(query_string.split(";")))]
-    
+
     def get_phase(self):
         """
         PHAS?
@@ -373,26 +366,6 @@ class SR830Driver(Driver):
         print(val)
         return val
 
-    def reset(self):
-        """
-        *RST
-        Resets the SR830 to its default configurations. The communications setup is not changed. Data stored in
-        buffers will be lost.
-        """
-        self.write("*RST")
-
-    def identify(self):
-        """
-        *IDN?
-        Queries the device's identification string.
-
-        The string will have the following format:
-        "Stanford_Research_Systems,SR830,s/n00111,ver1.000".
-
-        In this example, the serial number is 00111 and the firmware version is 1.000
-        """
-        return self.query("*IDN?")
-
     def get_local_or_remote_state(self):
         """
         LOCL?
@@ -412,13 +385,6 @@ class SR830Driver(Driver):
         Local Lockout => 2
         """
         self.write("LOCL {}".format(i))
-
-    def clear_status_registers(self):
-        """
-        *CLS
-        Clears all status registers. The status ENABLE registers are NOT cleared.
-        """
-        self.write("*CLS")
 
     def get_standard_event_status_byte(self):
         """
