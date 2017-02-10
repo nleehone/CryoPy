@@ -15,8 +15,8 @@ class Driver(Driver):
     def __init__(self, driver_port):
         super().__init__(driver_port)
         rm = visa.ResourceManager()
-        self.MagnetPowerSupply = MagnetPowerSupplyDriver(rm.open_resource('ASRL4::INSTR'))
-        print(self.Keithley6221.identify())
+        self.instrument = MagnetPowerSupplyDriver(rm.open_resource('ASRL4::INSTR'))
+        print(self.instrument.identify())
         self.get_commands = {
             'identify': self.identify,
             'query': self.query,
@@ -27,13 +27,13 @@ class Driver(Driver):
         }
         
     def query(self, pars):
-        return self.MagnetPowerSupply.multi_query(pars)
+        return self.instrument.multi_query(pars)
         
     def write(self, pars):
-        self.MagnetPowerSupply.write(pars)
+        self.instrument.write(pars)
 
     def identify(self, pars):
-        return self.MagnetPowerSupply.identify()
+        return self.instrument.identify()
 
 
 if __name__ == '__main__':

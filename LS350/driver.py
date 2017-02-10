@@ -25,34 +25,34 @@ class Driver(Component):
     def __init__(self, driver_port):
         super().__init__(driver_port)
         rm = visa.ResourceManager()
-        self.LS350 = LS350(rm.open_resource('ASRL6::INSTR'))
+        self.instrument = LS350(rm.open_resource('ASRL6::INSTR'))
 
     def set_temperature_setpoint(self, params):
         try:
-            self.LS350.set_temperature_setpoint(params['channel'], params['setpoint'])
+            self.instrument.set_temperature_setpoint(params['channel'], params['setpoint'])
         except KeyError as e:
             print(e)
             
     def set_heater_range(self, params):
         try:
-            self.LS350.set_heater_range(params['output'], params['range'])
+            self.instrument.set_heater_range(params['output'], params['range'])
         except KeyError as e:
             print(e)
 
     def get_temperature(self, params):
-        temp = self.LS350.get_temperature(params['channel'])
+        temp = self.instrument.get_temperature(params['channel'])
         return temp
 
     def get_heater_output(self, params):
-        percent = self.LS350.get_heater_output(params['output'])
+        percent = self.instrument.get_heater_output(params['output'])
         return {'output': params['output'], 'percent': percent}
 
     def get_heater_range(self, params):
-        range = self.LS350.get_heater_range(params['output'])
+        range = self.instrument.get_heater_range(params['output'])
         return {'output': params['output'], 'range': range}
 
     def get_sens(self):
-        return self.LS350.get_sensor('A')
+        return self.instrument.get_sensor('A')
 
     def set(self, command, params):
         try:
@@ -64,14 +64,14 @@ class Driver(Component):
             print(e)
 
     def get_idn(self, params):
-        return {'identity': self.LS350.identification_query()}
+        return {'identity': self.instrument.identification_query()}
                 
     def get_all(self, params):
-        return {'temperature': self.LS350.get_all_temperature(), 
-                'heater': self.LS350.get_all_heater()}
+        return {'temperature': self.instrument.get_all_temperature(),
+                'heater': self.instrument.get_all_heater()}
 
     def get_sensor(self, params):
-        return self.LS350.get_sensor(params['channel'])
+        return self.instrument.get_sensor(params['channel'])
 
     def get(self, command, params):
         try:
