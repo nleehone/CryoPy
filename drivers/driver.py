@@ -14,7 +14,7 @@ class Driver(object):
         return self.resource.query(command)
 
     def write(self, command):
-        return self.resource.query(command)
+        return self.resource.write(command)
 
     """
     Common commands are defined below. Note that not all common commands will be defined by every instrument.
