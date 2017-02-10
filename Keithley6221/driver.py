@@ -15,8 +15,9 @@ class Driver(Driver):
     def __init__(self, driver_port):
         super().__init__(driver_port)
         rm = visa.ResourceManager()
-        self.Keithley6221 = Keithley6221Driver(rm.open_resource('ASRL17::INSTR'))
-        print(self.Keithley6221.identify())
+        self.instrument = Keithley6221Driver(rm.open_resource('ASRL17::INSTR'))
+        print(self.instrument.identify())
+
         self.get_commands = {
             'get_compliance': self.get_compliance,
             'get_filter_state': self.get_filter_state,
@@ -33,34 +34,34 @@ class Driver(Driver):
         }
         
     def query(self, pars):
-        return self.Keithley6221.multi_query(pars)
+        return self.instrument.multi_query(pars)
         
     def write(self, pars):
-        self.Keithley6221.write(pars)
+        self.instrument.write(pars)
 
     def get_compliance(self, pars):
-        return self.Keithley6221.get_compliance()
+        return self.instrument.get_compliance()
 
     def get_filter_state(self, pars):
-        return self.Keithley6221.get_filter_state()
+        return self.instrument.get_filter_state()
 
     def get_pre_math_data(self, pars):
-        return self.Keithley6221.get_pre_math_data()
+        return self.instrument.get_pre_math_data()
 
     def get_post_math_data(self, pars):
-        return self.Keithley6221.get_post_math_data()
+        return self.instrument.get_post_math_data()
 
     def identify(self, pars):
-        return self.Keithley6221.identify()
+        return self.instrument.identify()
 
     def set_data_elements(self, pars):
-        self.Keithley6221.set_data_elements(pars)
+        self.instrument.set_data_elements(pars)
 
     def set_compliance(self, pars):
-        self.Keithley6221.set_compliance(pars)
+        self.instrument.set_compliance(pars)
 
     def set_filter_state(self, pars):
-        self.Keithley6221.set_filter_state(pars)
+        self.instrument.set_filter_state(pars)
 
 
 if __name__ == '__main__':

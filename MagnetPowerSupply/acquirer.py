@@ -1,5 +1,5 @@
 from component import Component
-from Keithley6221.config import *
+from MagnetPowerSupply.config import *
 import zmq
 import time
 import sys
