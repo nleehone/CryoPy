@@ -16,6 +16,10 @@ class Driver(Driver):
         super().__init__(driver_port)
         rm = visa.ResourceManager()
         self.instrument = Keithley6221Driver(rm.open_resource('ASRL17::INSTR'))
+        self.instrument.clear_status()
+        print(self.instrument.identify())
+        print(self.instrument.query(":STAT:MEAS:COND?"))
+        self.instrument.query(":SYST:ERR?")
         print(self.instrument.identify())
 
         self.get_commands = {
@@ -55,6 +59,7 @@ class Driver(Driver):
         return self.instrument.identify()
 
     def set_data_elements(self, pars):
+        print("HERE!")
         self.instrument.set_data_elements(pars)
 
     def set_compliance(self, pars):

@@ -12,7 +12,8 @@ class Keithley6221Driver(Driver):
             resource.data_bits = 8
             resource.parity = pyvisa.constants.Parity.none
             resource.stop_bits = pyvisa.constants.StopBits.one
-            resource.read_termination = resource.LF
+            resource.read_termination = resource.CR
+            
         except AttributeError:
             pass
 
