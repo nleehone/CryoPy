@@ -1,4 +1,5 @@
-import zmq
+import pika
+from threading import Thread
 
 
 class Component(object):
@@ -6,7 +7,30 @@ class Component(object):
 
     All component have a command socket (REP=response) to allow other parts of the system to communicate with them.
     """
-    def __init__(self, port):
-        self.context = zmq.Context()
-        self.command_socket = self.context.socket(zmq.REP)
-        self.command_socket.bind('tcp://*:{}'.format(port))
+    def __init__(self, command_queue):
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        self.command_channel = self.connection.channel()
+        self.command_channel.queue_declare(queue=command_queue, exclusive=True, auto_delete=True)
+        self.command_channel.basic_consume(self.on_command, queue=command_queue)
+        # Consume messages in a separate thread so we can continue doing operations on the main thread
+        p = Thread(target=self.command_channel.start_consuming)
+        p.start()
+
+    def on_command(self, channel, method_frame, properties, body):
+        channel.basic_publish('', routing_key=properties.reply_to, body='Not Implemented')
+
+
+if __name__ == '__main__':
+    # Test the component interacting with a client
+    command_queue = 'cmd_queue'
+    c = Component(command_queue)
+
+    def reply(channel, method_frame, properties, body):
+        print(body)
+
+    c = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    ch = c.channel()
+    ch.basic_consume(reply, queue='amq.rabbitmq.reply-to', no_ack=True)
+    ch.basic_publish(exchange='', routing_key=command_queue, body='Test', properties=pika.BasicProperties(reply_to='amq.rabbitmq.reply-to'))
+
+    ch.start_consuming()

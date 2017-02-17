@@ -12,8 +12,8 @@ class Driver(Driver):
     Commands:
     """
 
-    def __init__(self, driver_port):
-        super().__init__(driver_port)
+    def __init__(self):
+        super().__init__("SR830")
         rm = visa.ResourceManager()
         self.SR830 = SR830Driver(rm.open_resource('ASRL4::INSTR'))
         print(self.SR830.identify())
@@ -185,4 +185,4 @@ class Driver(Driver):
 
 
 if __name__ == '__main__':
-    Driver(driver_port).run()
+    Driver()
