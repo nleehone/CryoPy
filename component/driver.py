@@ -18,22 +18,23 @@ class Driver(Component):
     def get(self, command, pars):
         try:
             return self.get_commands[command](pars)
-        except Exception as e:
-            print(e)
+        except Exception:
+            self.logger.error('Invalid CMD: {}'.format(command), exc_info=True)
 
     def set(self, command, pars):
         try:
             return self.set_commands[command](pars)
-        except Exception as e:
-            print(e)
+        except Exception:
+            self.logger.error('Invalid CMD: {}'.format(command), exc_info=True)
 
-    def on_command(self, channel, method_frame, properties, body):
+    def process_command(self, body):
         command = json.loads(body)
         if command['METHOD'] == 'SET':
             self.set(command['CMD'], command['PARS'])
-            value = {}
+            reply = ""
         elif command['METHOD'] == 'GET':
-            value = self.get(command['CMD'], command['PARS'])
+            reply = self.get(command['CMD'], command['PARS'])
         else:
-            raise ValueError("METHOD must be either GET or SET")
-        channel.basic_publish('', routing_key=properties.reply_to, body=json.dumps(value))
+            reply = "Invalid METHOD: METHOD must be either GET or SET"
+            self.logger.warning(reply)
+        return json.dumps(reply)
