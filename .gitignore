@@ -3,3 +3,4 @@ test1/*
 __pycache__/*
 *.pyc
 *.hdf5
+*.log

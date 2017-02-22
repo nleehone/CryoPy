@@ -7,16 +7,18 @@ from drivers import SR830Driver
 from component import *
 
 
-class Driver(Driver):
+class SR830Driver(Driver):
     """
     Commands:
     """
 
-    def __init__(self, driver_port):
-        super().__init__(driver_port)
+    def __init__(self):
+        super().__init__("SR830")
+
         rm = visa.ResourceManager()
         self.SR830 = SR830Driver(rm.open_resource('ASRL4::INSTR'))
-        print(self.SR830.identify())
+        self.logger.info("Identity query:", self.identify())
+
         self.get_commands = {
             'phase': self.get_phase,
             'reference_source': self.get_reference_source,
@@ -185,4 +187,5 @@ class Driver(Driver):
 
 
 if __name__ == '__main__':
-    Driver(driver_port).run()
+    with SR830Driver() as driver:
+        pass
