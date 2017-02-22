@@ -15,7 +15,7 @@ def get_temperature():
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Cannot initialize the Driver without a port: python driver.py <port>")
+        print("Cannot initialize the Driver without a port: python ls350driver.py <port>")
         exit()
 
     port = sys.argv[1]
