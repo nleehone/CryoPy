@@ -13,12 +13,7 @@ class LS350Acquirer(Acquirer):
         self.driver_connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         self.driver_channel = self.driver_connection.channel()
         self.driver_queue = "{}.{}".format(self.prefix, "driver")
-        #self.pub_socket = self.context.socket(zmq.PUB)
-        #self.pub_socket.bind('tcp://*:{}'.format(pub_port))
-
-        #self.driver_socket = self.context.socket(zmq.REQ)
-        #self.driver_socket.connect('tcp://localhost:{}'.format(driver_port))
-        self.driver_channel.basic_consume(self.on_response, queue='amq.rabbitmq.reply-to', no_ack=True)
+        self.driver_channel.basic_consume(self.on_driver_response, queue='amq.rabbitmq.reply-to', no_ack=True)
         self.response = None
 
     def acquire(self):
@@ -52,24 +47,26 @@ class LS350Acquirer(Acquirer):
         self.pub_socket.send_multipart([b'LS350', json.dumps(data).encode('utf-8')])
 
         time.sleep(0.1)"""
-        
-    def process_command(self, body):
-        measurement_time = time.time()
-        print(body)
+
+    def send_driver_request(self):
         self.driver_channel.basic_publish(exchange='',
                                           routing_key=self.driver_queue,
                                           body=json.dumps({'METHOD': 'GET', 'CMD': 'get_temperature', 'PARS': {'channel': 'A'}}),
                                           properties=pika.BasicProperties(reply_to='amq.rabbitmq.reply-to'))
-        resp = ""
         while self.response is None:
             self.driver_connection.process_data_events()
+
         resp = self.response
         self.response = None
-        print("returning", resp)
         return json.dumps(resp)
 
-    def on_response(self, channel, method, properties, body):
-        print("Got", body)
+    def process_command(self, body):
+        measurement_time = time.time()
+        resp = self.send_driver_request()
+        print("returning", resp)
+        return resp
+
+    def on_driver_response(self, channel, method, properties, body):
         self.response = body.decode('utf-8')
 
 
