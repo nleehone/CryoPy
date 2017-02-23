@@ -35,6 +35,7 @@ class LS350Driver(Driver):
             'get_sens': self.CMD_GET_sens,
             'get_idn': self.CMD_GET_idn,
             'get_all': self.CMD_GET_all,
+            'get_all_temperatures': self.CMD_GET_all_temperatures,
             'get_sensor': self.CMD_GET_sensor
         }
 
@@ -57,7 +58,7 @@ class LS350Driver(Driver):
 
     def CMD_GET_temperature(self, params):
         temp = self.instrument.get_temperature(params['channel'])
-        return temp
+        return float(temp)
 
     def CMD_GET_heater_output(self, params):
         percent = self.instrument.get_heater_output(params['output'])
@@ -72,7 +73,10 @@ class LS350Driver(Driver):
 
     def CMD_GET_idn(self, params):
         return {'identity': self.instrument.identification_query()}
-                
+              
+    def CMD_GET_all_temperatures(self, params):
+        return self.instrument.get_all_temperature()
+  
     def CMD_GET_all(self, params):
         return {'temperature': self.instrument.get_all_temperature(),
                 'heater': self.instrument.get_all_heater()}

@@ -28,14 +28,17 @@ class Driver(Component):
             self.logger.error('Invalid CMD: {}'.format(command), exc_info=True)
 
     def process_command(self, body):
-        print(body)
         command = json.loads(body.decode('utf-8'))
+        print(command)
         if command['METHOD'] == 'SET':
             self.set(command['CMD'], command['PARS'])
             reply = ""
         elif command['METHOD'] == 'GET':
             reply = self.get(command['CMD'], command['PARS'])
+            print(reply, type(reply))
         else:
             reply = "Invalid METHOD: METHOD must be either GET or SET"
             self.logger.warning(reply)
-        return json.dumps(reply)
+        rep = json.dumps(reply)
+        print(rep)
+        return rep

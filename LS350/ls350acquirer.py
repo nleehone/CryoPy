@@ -49,7 +49,7 @@ class LS350Acquirer(Acquirer):
         time.sleep(0.1)"""
 
     def driver_get_temperature(self, channel):
-        return json.dumps({'METHOD': 'GET', 'CMD': 'get_temperature', 'PARS': {'channel': channel}})
+        return json.dumps({'METHOD': 'GET', 'CMD': 'get_all_temperatures', 'PARS': {'channel': channel}})
 
     def send_driver_request(self, body):
         command = None
@@ -69,10 +69,11 @@ class LS350Acquirer(Acquirer):
                                               properties=pika.BasicProperties(reply_to='amq.rabbitmq.reply-to'))
             while self.response is None:
                 self.driver_connection.process_data_events()
-
+                
             resp = self.response
+            print(resp, type(resp))
             self.response = None
-            return json.dumps(resp)
+            return resp
         else:
             return json.dumps("Nothing")
 
@@ -83,6 +84,7 @@ class LS350Acquirer(Acquirer):
         return resp
 
     def on_driver_response(self, channel, method, properties, body):
+        print(body)
         self.response = body.decode('utf-8')
 
 

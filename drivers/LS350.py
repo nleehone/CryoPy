@@ -156,10 +156,12 @@ class LS350(Driver):
         self.resource.write(command)
         
     def get_all_temperature(self):
-        command = "RDGST?A;RDGST?B;RDGST?C;RDGST?D;" + \
-                    "KRDG?A;KRDG?B;KRDG?C;KRDG?D;" + \
-                    "SRDG?A;SRDG?B;SRDG?C;SRDG?D;" + \
-                    "SETP?1;SETP?2;SETP?3;SETP?4"
+        command =   "KRDG?A;KRDG?B;KRDG?C;KRDG?D;" + \
+                    "SRDG?A;SRDG?B;SRDG?C;SRDG?D;"
+        #command = "RDGST?A;RDGST?B;RDGST?C;RDGST?D;" + \
+        #            "KRDG?A;KRDG?B;KRDG?C;KRDG?D;" + \
+        #            "SRDG?A;SRDG?B;SRDG?C;SRDG?D;" + \
+        #            "SETP?1;SETP?2;SETP?3;SETP?4"
                     
         return self.resource.query(command)
         
