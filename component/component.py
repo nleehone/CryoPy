@@ -2,6 +2,8 @@ import pika
 import json
 import logging
 from threading import Thread
+import os 
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 class Component(object):
@@ -46,7 +48,8 @@ class Component(object):
         self.logger.setLevel(logging.INFO)
 
         # create a file handler
-        handler = logging.FileHandler("{}.log".format(__name__))
+        print("{}/{}.log".format(dir_path, __name__))
+        handler = logging.FileHandler("{}\{}.log".format(dir_path, __name__))
         handler.setLevel(logging.INFO)
 
         # create a logging format
