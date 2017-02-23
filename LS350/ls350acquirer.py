@@ -48,11 +48,24 @@ class LS350Acquirer(Acquirer):
 
         time.sleep(0.1)"""
 
+    def driver_get_temperature(self, channel):
+        return json.dumps({'METHOD': 'GET', 'CMD': 'get_temperature', 'PARS': {'channel': channel}})
+
     def send_driver_request(self, body):
+        command = None
         if body == 'read_D':
+            command = self.driver_get_temperature('D')
+        elif body == 'read_A':
+            command = self.driver_get_temperature('A')
+        elif body == 'read_B':
+            command = self.driver_get_temperature('B')
+        elif body == 'read_C':
+            command = self.driver_get_temperature('C')
+
+        if command:
             self.driver_channel.basic_publish(exchange='',
                                               routing_key=self.driver_queue,
-                                              body=json.dumps({'METHOD': 'GET', 'CMD': 'get_temperature', 'PARS': {'channel': 'D'}}),
+                                              body=command,
                                               properties=pika.BasicProperties(reply_to='amq.rabbitmq.reply-to'))
             while self.response is None:
                 self.driver_connection.process_data_events()
