@@ -25,8 +25,8 @@ class LS350Driver(Driver):
     def __init__(self):
         super().__init__("LS350")
         rm = visa.ResourceManager()
-        self.instrument = LS350(rm.open_resource('ASRL6::INSTR'))
-        self.instrument.identify()
+        self.instrument = LS350(rm.open_resource('ASRL9::INSTR'))
+        print(self.instrument.identify())
 
         self.get_commands = {
             'get_temperature': self.CMD_GET_temperature,
@@ -83,5 +83,5 @@ class LS350Driver(Driver):
 
 if __name__ == '__main__':
     with LS350Driver() as driver:
-        pass
-
+        while True:
+            pass

@@ -8,13 +8,13 @@ from component import *
 
 
 class LS350Acquirer(Acquirer):
-    def __init__(self, command_port, pub_port, driver_port):
-        super().__init__(command_port)
-        self.pub_socket = self.context.socket(zmq.PUB)
-        self.pub_socket.bind('tcp://*:{}'.format(pub_port))
+    def __init__(self):
+        super().__init__("LS350")
+        #self.pub_socket = self.context.socket(zmq.PUB)
+        #self.pub_socket.bind('tcp://*:{}'.format(pub_port))
 
-        self.driver_socket = self.context.socket(zmq.REQ)
-        self.driver_socket.connect('tcp://localhost:{}'.format(driver_port))
+        #self.driver_socket = self.context.socket(zmq.REQ)
+        #self.driver_socket.connect('tcp://localhost:{}'.format(driver_port))
 
     def acquire(self):
         # Get the data from the instrument driver
@@ -51,5 +51,6 @@ class LS350Acquirer(Acquirer):
 
 if __name__ == '__main__':
     with LS350Acquirer() as acquirer:
-        pass
+        while True:
+            pass
 
