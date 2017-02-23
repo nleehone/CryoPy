@@ -41,7 +41,7 @@ class StatusWindow(tk.Frame):
         self.create_part(1, 'Driver', 'ls350driver.py')
         self.create_part(2, 'Acquirer', 'ls350acquirer.py')
         self.create_part(3, 'Data Store', 'data_store.py')
-        self.create_part(4, 'Recorder', 'recorder.py')
+        self.create_part(4, 'Recorder', 'ls350recorder.py')
         self.create_part(5, 'Controller', 'controller.py')
         self.create_part(6, 'Front End', 'frontend.py')
         self.check_status()

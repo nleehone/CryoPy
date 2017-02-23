@@ -1,7 +1,7 @@
 import zmq
 
 
-class Recorder(object):
+class LS350Recorder(object):
     def __init__(self, command_port, datastore_port):
         self.context = zmq.Context()
 
