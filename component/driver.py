@@ -28,7 +28,8 @@ class Driver(Component):
             self.logger.error('Invalid CMD: {}'.format(command), exc_info=True)
 
     def process_command(self, body):
-        command = json.loads(body)
+        print(body)
+        command = json.loads(body.decode('utf-8'))
         if command['METHOD'] == 'SET':
             self.set(command['CMD'], command['PARS'])
             reply = ""

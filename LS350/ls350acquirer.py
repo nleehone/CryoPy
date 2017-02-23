@@ -55,6 +55,7 @@ class LS350Acquirer(Acquirer):
         
     def process_command(self, body):
         measurement_time = time.time()
+        print(body)
         self.driver_channel.basic_publish(exchange='',
                                           routing_key=self.driver_queue,
                                           body=json.dumps({'METHOD': 'GET', 'CMD': 'get_temperature', 'PARS': {'channel': 'A'}}),
@@ -62,13 +63,14 @@ class LS350Acquirer(Acquirer):
         resp = ""
         while self.response is None:
             self.driver_connection.process_data_events()
-            resp = self.response
-            self.response = None
+        resp = self.response
+        self.response = None
+        print("returning", resp)
         return json.dumps(resp)
 
     def on_response(self, channel, method, properties, body):
         print("Got", body)
-        self.response = body
+        self.response = body.decode('utf-8')
 
 
 if __name__ == '__main__':
