@@ -50,7 +50,7 @@ class LS350Acquirer(Acquirer):
         
     def process_command(self, body):
         measurement_time = time.time()
-        self.publish(measurement_time)
+        return str( measurement_time)
 
 
 if __name__ == '__main__':
