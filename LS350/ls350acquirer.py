@@ -48,21 +48,24 @@ class LS350Acquirer(Acquirer):
 
         time.sleep(0.1)"""
 
-    def send_driver_request(self):
-        self.driver_channel.basic_publish(exchange='',
-                                          routing_key=self.driver_queue,
-                                          body=json.dumps({'METHOD': 'GET', 'CMD': 'get_temperature', 'PARS': {'channel': 'A'}}),
-                                          properties=pika.BasicProperties(reply_to='amq.rabbitmq.reply-to'))
-        while self.response is None:
-            self.driver_connection.process_data_events()
+    def send_driver_request(self, body):
+        if body == 'read_D':
+            self.driver_channel.basic_publish(exchange='',
+                                              routing_key=self.driver_queue,
+                                              body=json.dumps({'METHOD': 'GET', 'CMD': 'get_temperature', 'PARS': {'channel': 'D'}}),
+                                              properties=pika.BasicProperties(reply_to='amq.rabbitmq.reply-to'))
+            while self.response is None:
+                self.driver_connection.process_data_events()
 
-        resp = self.response
-        self.response = None
-        return json.dumps(resp)
+            resp = self.response
+            self.response = None
+            return json.dumps(resp)
+        else:
+            return json.dumps("Nothing")
 
     def process_command(self, body):
         measurement_time = time.time()
-        resp = self.send_driver_request()
+        resp = self.send_driver_request(body.decode('utf-8'))
         print("returning", resp)
         return resp
 
