@@ -31,7 +31,7 @@ class Acquirer(Component):
 
     def publish(self, body):
         message = json.dumps(body)
-        self.logger.info('Publishing: {}'.format(message))
+        self.logger.debug('Publishing: {}'.format(message))
         self.publisher_channel.basic_publish(exchange=self.publisher_exchange, routing_key='', body=message)
 
     def acquire(self):

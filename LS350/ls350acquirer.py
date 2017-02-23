@@ -18,8 +18,8 @@ class LS350Acquirer(Acquirer):
 
     def acquire(self):
         # Get the data from the instrument driver
-        measurement_time = time.time()
-        self.publish(measurement_time)
+        #measurement_time = time.time()
+        #self.publish(measurement_time)
         """data = {}
         #data['temperature'] = {}
         #data['heater_output'] = {}
@@ -47,6 +47,10 @@ class LS350Acquirer(Acquirer):
         self.pub_socket.send_multipart([b'LS350', json.dumps(data).encode('utf-8')])
 
         time.sleep(0.1)"""
+        
+    def process_command(self, body):
+        measurement_time = time.time()
+        self.publish(measurement_time)
 
 
 if __name__ == '__main__':
